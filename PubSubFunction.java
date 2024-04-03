@@ -1,5 +1,5 @@
 package gcfv2pubsub;
-
+ 
 import com.google.cloud.functions.CloudEventsFunction;
 import com.google.events.cloud.pubsub.v1.MessagePublishedData;
 import com.google.events.cloud.pubsub.v1.Message;
@@ -14,16 +14,18 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import java.sql.*;
 import java.util.Base64;
 import java.util.logging.Logger;
-
+ 
 public class PubSubFunction implements CloudEventsFunction {
-
+ 
   private static final Logger logger = Logger.getLogger(PubSubFunction.class.getName());
-  private final String mailgunApiKey = System.getenv("apiKey");
+  private final String mailgunApiKey = System.getenv("api_key");
   private final String mailgunDomainName = "nixor.me";
-  private final String verificationBaseUrl = "http://nixor.me:8080/v1/verify/";
+  private final String verificationBaseUrl = "https://nixor.me/v1/verify/";
   private final String dblink = System.getenv("dbUrl");
   private final String dbname = System.getenv("dbName");
   private final String dbPass = System.getenv("dbPass");// Base URL for verification endpoint
+ 
+ 
   @Override
   public void accept(CloudEvent event)  {
     // Get cloud event data as JSON string
@@ -47,7 +49,7 @@ public class PubSubFunction implements CloudEventsFunction {
     String emailBody = "This is a test email to verify sending functionality. Please click on the following link to verify your email address: " + verificationLink;
     testEmailSending(email, emailBody);
     saveToDatabase(email, System.currentTimeMillis()); // Pass current time as email sending time
-
+ 
   }
   private void testEmailSending(String email, String emailBody) {
     try {
@@ -68,8 +70,8 @@ public class PubSubFunction implements CloudEventsFunction {
       logger.severe("Error sending email: " + e.getMessage());
     }
   }
-
-
+ 
+ 
   private void saveToDatabase(String email,  long sent_time) {
     String dbUrl = dblink;
     String dbUsername = dbname;
@@ -93,7 +95,7 @@ public class PubSubFunction implements CloudEventsFunction {
     } catch (SQLException e) {
       logger.info("Error inserting data into the database: " + e.getMessage());
     }
-
+ 
   }
-
+ 
 }
